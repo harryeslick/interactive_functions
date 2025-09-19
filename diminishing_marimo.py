@@ -13,8 +13,9 @@ async def _(app_version="0.1.0"):
         try:  # pragma: no cover - only runs in Pyodide
             import interactive_functions  # type: ignore  # noqa: F401
         except ModuleNotFoundError:
-            from js import fetch, __md_scope  # type: ignore
             from urllib.parse import urljoin
+
+            from js import __md_scope, fetch  # type: ignore
 
             base_href = str(__md_scope.href)
             if not base_href.endswith("/"):
