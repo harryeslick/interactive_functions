@@ -51,10 +51,10 @@ markdown_extensions:
   - md_in_html
   - pymdownx.arithmatex
 
-# nav:
-#   - Home: index.md
-#   - Examples:
-#     - Dispersal Kernels: examples/dispersal_kernels.md
+nav:
+  - Home: index.md
+  - Examples:
+    - Dispersal Kernels: examples/dispersal_kernels.md
 
 extra_javascript:
   - https://cdn.plot.ly/plotly-2.32.0.min.js
@@ -62,3 +62,7 @@ extra_javascript:
 
 extra_css:
   - style.css
+
+watch:
+  - src
+  - tools/export_notebooks_with_wheel.sh
