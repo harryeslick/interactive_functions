@@ -9,10 +9,9 @@ def _():
     # `mo` (marimo) is already imported at the module level
     import numpy as np
     
-    # Import plotly components explicitly to avoid dependency parsing confusion
+    # Import plotly components using explicit from-import to avoid parsing issues
     try:
-        import plotly
-        go = plotly.graph_objects
+        from plotly import graph_objects as go
     except ImportError:
         # Fallback for environments where plotly is not available
         go = None
