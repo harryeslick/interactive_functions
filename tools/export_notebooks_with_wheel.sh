@@ -5,11 +5,17 @@ set -euo pipefail
 ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT_DIR"
 
-mkdir -p docs/assets/wheels
+WHEEL_DIR="docs/assets/wheels"
+mkdir -p "$WHEEL_DIR"
 
-# Build wheel using uv/hatchling
+# Build wheel using uv if available, otherwise fall back to python -m build
 echo "Building wheel..." >&2
-uv build --wheel
+if command -v uv >/dev/null 2>&1; then
+	uv build --wheel
+else
+	python -m pip install --upgrade build >/dev/null 2>&1 || true
+	python -m build --wheel
+fi
 
 # Locate the latest built wheel (uv may place it in a parent dist)
 echo "Locating built wheel..." >&2
@@ -31,10 +37,10 @@ if [ -z "${WHEEL_PATH}" ] || [ ! -f "${WHEEL_PATH}" ]; then
 fi
 
 echo "Using wheel: ${WHEEL_PATH}" >&2
-cp "${WHEEL_PATH}" docs/assets/wheels/interactive_functions-latest-py3-none-any.whl
+cp "${WHEEL_PATH}" "${WHEEL_DIR}/interactive_functions-latest-py3-none-any.whl"
 
 # Export marimo notebooks to html-wasm
 python -m marimo export html-wasm dispersal_kernels_marimo.py -o dispersal_kernels_marimo.html
 # python -m marimo export html-wasm docs/notebooks/diminishing_returns.py -o docs/notebooks/diminishing_returns.html
 
-echo "Exported notebooks and prepared wheel at docs/assets/wheels/interactive_functions-latest-py3-none-any.whl"
+echo "Exported notebooks and prepared wheel at ${WHEEL_DIR}/interactive_functions-latest-py3-none-any.whl"

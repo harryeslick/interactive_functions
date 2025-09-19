@@ -27,39 +27,27 @@ app = marimo.App()
 
 
 @app.cell
-def _(app_version="0.1.0"):
+async def _(app_version="0.1.0"):
     import sys
 
-    result = app_version
+    version = app_version
     if sys.platform == "emscripten":
         try:  # pragma: no cover - only runs in Pyodide
             import interactive_functions  # type: ignore  # noqa: F401
         except ModuleNotFoundError:
-            import io
-            import zipfile
-            from pathlib import Path
             from urllib.parse import urljoin
 
+            import micropip
             from js import __md_scope
-            from pyodide.http import open_url
 
             base_href = str(__md_scope.href)
             if not base_href.endswith("/"):
                 base_href += "/"
-            zip_url = urljoin(base_href, "assets/python/interactive_functions.zip")
+            wheel_url = urljoin(base_href, "assets/wheels/interactive_functions-latest-py3-none-any.whl")
 
-            extract_root = Path("/tmp/interactive_functions_pkg")
+            await micropip.install(f"interactive-functions @ {wheel_url}")
 
-            if not extract_root.exists():
-                data = open_url(zip_url).read()
-                with zipfile.ZipFile(io.BytesIO(data)) as zf:
-                    zf.extractall(extract_root)
-
-            str_root = str(extract_root)
-            if str_root not in sys.path:
-                sys.path.insert(0, str_root)
-
-    return result
+    version
 
 
 @app.cell
