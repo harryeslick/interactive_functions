@@ -2,6 +2,7 @@
 scratch.py
 docs/
 site/
+assets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
