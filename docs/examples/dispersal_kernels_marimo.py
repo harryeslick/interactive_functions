@@ -8,7 +8,6 @@ import marimo
 
 def _ensure_project_src_on_path() -> None:
     """Add the project's src directory to sys.path if available."""
-
     file_path = Path(__file__).resolve()
     potential_roots = [file_path.parent, *file_path.parents]
 
@@ -31,16 +30,17 @@ async def _(app_version="0.1.0"):
     import sys
     if sys.platform == "emscripten":
         try:  # pragma: no cover - only runs in Pyodide
-            import interactive_functions  # type: ignore  # noqa: F401
+            __import__("interactive_functions")  # Avoid literal import to prevent micropip auto-fetch
         except ModuleNotFoundError:
             # Fetch and exec the lightweight helper, then run the installer
             from urllib.parse import urljoin
 
-            from js import __md_scope, fetch  # type: ignore
+            from js import fetch, window  # type: ignore
 
-            base_href = str(__md_scope.href)
-            if not base_href.endswith("/"):
-                base_href += "/"
+            origin = str(window.location.origin)
+            pathname = str(window.location.pathname)
+            site_root = "/interactive_functions/" if "/interactive_functions/" in pathname else "/"
+            base_href = origin + site_root
             helper_url = urljoin(base_href, "assets/py/pyodide_utils.py")
 
             print("Loading Pyodide helper...", helper_url)
@@ -65,19 +65,21 @@ def _(app_version="0.1.0"):
         # Fallback for environments where plotly is not available
         go = None
 
-    from interactive_functions import (
-        ExponentialKernel,
-        ExpPowerKernel,
-        GaussianKernel,
-        PowerLawKernel,
-        RectangularHyperbolaKernel,
-        kernel_exponential,
-        kernel_exppower,
-        kernel_gaussian,
-        kernel_powerlaw,
-        kernel_rectangular_hyperbola,
-    )
-    from interactive_functions.md_docs_parser import doc_to_markdown
+    import importlib
+
+    _if_mod = importlib.import_module("interactive_functions")
+    ExponentialKernel = getattr(_if_mod, "ExponentialKernel")
+    ExpPowerKernel = getattr(_if_mod, "ExpPowerKernel")
+    GaussianKernel = getattr(_if_mod, "GaussianKernel")
+    PowerLawKernel = getattr(_if_mod, "PowerLawKernel")
+    RectangularHyperbolaKernel = getattr(_if_mod, "RectangularHyperbolaKernel")
+    kernel_exponential = getattr(_if_mod, "kernel_exponential")
+    kernel_exppower = getattr(_if_mod, "kernel_exppower")
+    kernel_gaussian = getattr(_if_mod, "kernel_gaussian")
+    kernel_powerlaw = getattr(_if_mod, "kernel_powerlaw")
+    kernel_rectangular_hyperbola = getattr(_if_mod, "kernel_rectangular_hyperbola")
+    _md_mod = importlib.import_module("interactive_functions.md_docs_parser")
+    doc_to_markdown = getattr(_md_mod, "doc_to_markdown")
     return (
         ExpPowerKernel,
         ExponentialKernel,

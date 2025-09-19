@@ -9,15 +9,16 @@ async def _(app_version="0.1.0"):
     import sys
     if sys.platform == "emscripten":
         try:  # pragma: no cover - only runs in Pyodide
-            import interactive_functions  # type: ignore  # noqa: F401
+            __import__("interactive_functions")  # Avoid literal import to prevent micropip auto-fetch
         except ModuleNotFoundError:
             from urllib.parse import urljoin
 
-            from js import __md_scope, fetch  # type: ignore
+            from js import fetch, window  # type: ignore
 
-            base_href = str(__md_scope.href)
-            if not base_href.endswith("/"):
-                base_href += "/"
+            origin = str(window.location.origin)
+            pathname = str(window.location.pathname)
+            site_root = "/interactive_functions/" if "/interactive_functions/" in pathname else "/"
+            base_href = origin + site_root
             helper_url = urljoin(base_href, "assets/py/pyodide_utils.py")
 
             print("Loading Pyodide helper...", helper_url)
@@ -42,9 +43,16 @@ def _(app_version="0.1.0"):
         # Fallback for environments where plotly is not available
         go = None
 
-    # Import reusable functions/classes from the src package
-    from interactive_functions import LogGrowth, PowerLawDecay, log_growth, power_law_decay
-    from interactive_functions.md_docs_parser import doc_to_markdown
+    # Import reusable functions/classes from the src package (avoid literal imports)
+    import importlib
+
+    _if_mod = importlib.import_module("interactive_functions")
+    LogGrowth = getattr(_if_mod, "LogGrowth")
+    PowerLawDecay = getattr(_if_mod, "PowerLawDecay")
+    log_growth = getattr(_if_mod, "log_growth")
+    power_law_decay = getattr(_if_mod, "power_law_decay")
+    _md_mod = importlib.import_module("interactive_functions.md_docs_parser")
+    doc_to_markdown = getattr(_md_mod, "doc_to_markdown")
     return (
         LogGrowth,
         PowerLawDecay,
