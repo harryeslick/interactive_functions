@@ -34,7 +34,7 @@ echo "Using wheel: ${WHEEL_PATH}" >&2
 cp "${WHEEL_PATH}" docs/assets/wheels/interactive_functions-latest-py3-none-any.whl
 
 # Export marimo notebooks to html-wasm
-python -m marimo export html-wasm docs/notebooks/growth_saturation.py -o docs/notebooks/growth_saturation.html
-python -m marimo export html-wasm docs/notebooks/diminishing_returns.py -o docs/notebooks/diminishing_returns.html
+python -m marimo export html-wasm dispersal_kernels_marimo.py -o dispersal_kernels_marimo.html
+# python -m marimo export html-wasm docs/notebooks/diminishing_returns.py -o docs/notebooks/diminishing_returns.html
 
 echo "Exported notebooks and prepared wheel at docs/assets/wheels/interactive_functions-latest-py3-none-any.whl"
