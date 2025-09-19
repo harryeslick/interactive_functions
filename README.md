@@ -67,3 +67,17 @@ When releasing a new version of the package:
 - If notebooks fail to load with package import errors, verify that `docs/assets/wheels/interactive_functions-latest-py3-none-any.whl` exists
 - Check the browser console for specific error messages
 - Ensure the GitHub Pages deployment completed successfully
+- Run `python tools/validate_pyodide_deployment.py` to check all deployment requirements
+
+### Validation
+
+Use the provided validation script to ensure your deployment setup is correct:
+
+```bash
+python tools/validate_pyodide_deployment.py
+```
+
+This script checks:
+- Wheel file existence and validity
+- Marimo notebook Pyodide compatibility
+- URL construction patterns
