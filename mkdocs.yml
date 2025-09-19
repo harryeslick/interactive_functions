@@ -1,0 +1,64 @@
+site_name: interactive_functions
+site_description: playground for viewing mathmatical functions
+site_author: Harry Eslick
+site_url: https://hfsi.github.io/interactive_functions/
+# repo_url: https://github.com/interactive_functions
+
+theme:
+    name: material
+    icon:
+        repo: fontawesome/brands/github
+    # logo: assets/logo.png
+    # favicon: assets/favicon.png
+    features:
+        - navigation.instant
+        - navigation.tracking
+        - navigation.tabs
+        - navigation.top
+        - search.highlight
+        - search.share
+
+    # font:
+    #     text: Google Sans
+    #     code: Regular
+
+plugins:
+  - search
+  - marimo
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_heading: false
+            show_symbol_type_heading: false
+            show_signature: true
+            separate_signature: true
+            docstring_section_style: list
+            merge_init_into_class: true
+  # - mermaid2
+  # - git-revision-date:
+  #     fallback_to_build_date: true
+
+markdown_extensions:
+  - toc
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - pymdownx.arithmatex
+
+nav:
+  - Home: index.md
+  - Examples:
+    - Dispersal Kernels: examples/dispersal_kernels.md
+
+extra_javascript:
+  - https://cdn.plot.ly/plotly-2.32.0.min.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - style.css
