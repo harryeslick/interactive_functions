@@ -45,9 +45,24 @@ async def _(app_version="0.1.0"):
                 base_href += "/"
             wheel_url = urljoin(base_href, "assets/wheels/interactive_functions-latest-py3-none-any.whl")
 
-            await micropip.install("plotly==5.24.1")
-            await micropip.install(wheel_url)
-            import interactive_functions  # type: ignore  # noqa: F401
+            try:
+                # Install packages in Pyodide environment
+                # First install numpy which is commonly needed and well-supported
+                await micropip.install("numpy")
+                # Install plotly without version constraint to get the most compatible version
+                await micropip.install("plotly")
+                # Install our custom wheel
+                await micropip.install(wheel_url)
+                import interactive_functions  # type: ignore  # noqa: F401
+            except Exception as e:
+                print(f"Error installing packages in Pyodide: {e}")
+                # Try to continue anyway - plotly might be pre-installed
+                try:
+                    await micropip.install(wheel_url)
+                    import interactive_functions  # type: ignore  # noqa: F401
+                except Exception as e2:
+                    print(f"Error installing interactive_functions wheel: {e2}")
+                    raise
 
     return version
 
@@ -56,7 +71,14 @@ async def _(app_version="0.1.0"):
 def _(app_version):
     import marimo as mo
     import numpy as np
-    import plotly.graph_objects as go
+    
+    # Import plotly components explicitly to avoid dependency parsing confusion
+    try:
+        import plotly
+        go = plotly.graph_objects
+    except ImportError:
+        # Fallback for environments where plotly is not available
+        go = None
 
     from interactive_functions import (
         ExponentialKernel,

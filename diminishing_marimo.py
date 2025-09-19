@@ -8,7 +8,14 @@ app = mo.App()
 def _():
     # `mo` (marimo) is already imported at the module level
     import numpy as np
-    import plotly.graph_objects as go
+    
+    # Import plotly components explicitly to avoid dependency parsing confusion
+    try:
+        import plotly
+        go = plotly.graph_objects
+    except ImportError:
+        # Fallback for environments where plotly is not available
+        go = None
 
     # Import reusable functions/classes from the src package
     from interactive_functions import LogGrowth, PowerLawDecay, log_growth, power_law_decay
