@@ -14,15 +14,24 @@ async def _(app_version="0.1.0"):
             import interactive_functions  # type: ignore  # noqa: F401
         except ModuleNotFoundError:
             from urllib.parse import urljoin
-            import micropip
-            from js import __md_scope
 
-            base_href = str(__md_scope.href)
+            import micropip
+
+            # Prefer document.baseURI for robust absolute URL, fallback to __md_scope.href
+            try:
+                from js import document  # type: ignore
+
+                base_href = str(getattr(document, "baseURI", ""))
+            except Exception:
+                from js import __md_scope  # type: ignore
+
+                base_href = str(__md_scope.href)
+
             if not base_href.endswith("/"):
                 base_href += "/"
             wheel_url = urljoin(base_href, "assets/wheels/interactive_functions-latest-py3-none-any.whl")
-            
-            print(f"Installing packages in Pyodide environment...")
+
+            print("Installing packages in Pyodide environment...")
             print(f"Using wheel URL: {wheel_url}")
 
             try:
@@ -34,9 +43,9 @@ async def _(app_version="0.1.0"):
                 # Install plotly without version constraint to get the most compatible version
                 await micropip.install("plotly")
                 print("✓ plotly installed")
-                
-                # Install our custom wheel
-                await micropip.install(wheel_url)
+
+                # Install our custom wheel from GitHub Pages; disable deps to avoid PyPI lookup
+                await micropip.install(wheel_url, deps=False)
                 print("✓ interactive_functions wheel installed")
                 
                 import interactive_functions  # type: ignore  # noqa: F401
@@ -45,8 +54,8 @@ async def _(app_version="0.1.0"):
                 print(f"Error installing packages in Pyodide: {e}")
                 # Try to continue anyway - plotly might be pre-installed
                 try:
-                    print("Retrying with just the wheel...")
-                    await micropip.install(wheel_url)
+                    print("Retrying with just the wheel (deps disabled)...")
+                    await micropip.install(wheel_url, deps=False)
                     import interactive_functions  # type: ignore  # noqa: F401
                     print(f"✓ interactive_functions imported successfully (v{interactive_functions.__version__})")
                 except Exception as e2:
