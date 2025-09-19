@@ -7,8 +7,6 @@ app = mo.App()
 @app.cell
 async def _(app_version="0.1.0"):
     import sys
-
-    version = app_version
     if sys.platform == "emscripten":
         try:  # pragma: no cover - only runs in Pyodide
             import interactive_functions  # type: ignore  # noqa: F401
@@ -29,11 +27,11 @@ async def _(app_version="0.1.0"):
             exec(code, scope)
             await scope["ensure_local_wheel_installed"]("interactive_functions")
 
-    return version
+    return app_version
 
 
 @app.cell
-def _(app_version):
+def _(app_version="0.1.0"):
     import marimo as mo
     import numpy as np
     
