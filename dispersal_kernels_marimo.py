@@ -45,9 +45,15 @@ async def _(app_version="0.1.0"):
                 base_href += "/"
             wheel_url = urljoin(base_href, "assets/wheels/interactive_functions-latest-py3-none-any.whl")
 
-            await micropip.install(f"interactive-functions @ {wheel_url}")
+            await micropip.install(
+                [
+                    "plotly==5.24.1",
+                    f"interactive-functions @ {wheel_url}",
+                ]
+            )
+            import interactive_functions  # type: ignore  # noqa: F401
 
-    version
+    return version
 
 
 @app.cell

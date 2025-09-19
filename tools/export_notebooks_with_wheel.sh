@@ -13,13 +13,13 @@ echo "Building wheel..." >&2
 if command -v uv >/dev/null 2>&1; then
 	uv build --wheel
 else
-	python -m pip install --upgrade build >/dev/null 2>&1 || true
-	python -m build --wheel
+	python3 -m pip install --upgrade build >/dev/null 2>&1 || true
+	python3 -m build --wheel
 fi
 
 # Locate the latest built wheel (uv may place it in a parent dist)
 echo "Locating built wheel..." >&2
-WHEEL_PATH=$(python - <<'PY'
+WHEEL_PATH=$(python3 - <<'PY'
 import glob, os, sys
 candidates = []
 for base in ("dist", "../dist", "../../dist"):
@@ -39,8 +39,4 @@ fi
 echo "Using wheel: ${WHEEL_PATH}" >&2
 cp "${WHEEL_PATH}" "${WHEEL_DIR}/interactive_functions-latest-py3-none-any.whl"
 
-# Export marimo notebooks to html-wasm
-python -m marimo export html-wasm dispersal_kernels_marimo.py -o dispersal_kernels_marimo.html
-# python -m marimo export html-wasm docs/notebooks/diminishing_returns.py -o docs/notebooks/diminishing_returns.html
-
-echo "Exported notebooks and prepared wheel at ${WHEEL_DIR}/interactive_functions-latest-py3-none-any.whl"
+echo "Prepared wheel at ${WHEEL_DIR}/interactive_functions-latest-py3-none-any.whl"
